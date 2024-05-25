@@ -4,7 +4,7 @@ async function getData() {
   const cookieStore = cookies();
   console.log("--CLIENT---> page::call api --5--->", { cookieStore });
   try {
-    const res = await fetch("http://localhost:3000/api/aaa", {
+    const res = await fetch("http://localhost:3000/api/coin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

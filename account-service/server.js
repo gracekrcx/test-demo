@@ -84,7 +84,7 @@ app.post("/refresh", async (req, res) => {
 
 // 指向 index.html 的路由
 app.get("/", (req, res) => {
-  res.redirect(`http://localhost:3000`);
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.listen(PORT, () => {
