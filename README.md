@@ -1,7 +1,7 @@
 ## 01-API 資料夾    
-- 用 api 的方式去訪問 account.myweb.com 情境說明寫在 issue > 01-API 
+- 用 api 的方式去訪問 account.myweb.com 情境說明寫在 [issue > 01-API](https://github.com/gracekrcx/test-demo/issues/1)
 ## 02-redirect 資料夾     
-- 導頁到 account.myweb.com 情境說明寫在 issue > 02-redirect 
+- 導頁到 account.myweb.com 情境說明寫在 [issue > 02-redirect](https://github.com/gracekrcx/test-demo/issues/2)
 
 ## 疑問
 [01-API](https://github.com/gracekrcx/test-demo/issues/1)    
