@@ -2,7 +2,7 @@ node version: v17.9.1
 ## 起服務
 ### nextjs
 ```console
-cd 02-redirect/ 
+cd 01-API/
 npm i (安裝 dependence)
 npm run dev (run 服務在 localhost:3000)
 ```
