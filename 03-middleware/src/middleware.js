@@ -2,7 +2,21 @@ import { isAuthenticated } from "./lib/auth";
 import { NextResponse } from "next/server";
 
 export async function middleware(request) {
-  console.log(request.url, "middleware");
+  const path = request.nextUrl.pathname;
+  const ip = request.ip ?? "Unknown";
+  const userAgent = request.headers.get("user-agent") ?? "Unknown";
+  const referer = request.headers.get("referer") ?? "Direct";
+  const method = request.method;
+  const timestamp = new Date().toISOString();
+  // log
+  console.log(`LOG---------------------------------`);
+  console.log("[Middleware]-url::", request.url);
+  console.log(`[Middleware]:: ${timestamp} ${method} ${path}`);
+  console.log(`[Middleware]-IP:: ${ip}`);
+  console.log(`[Middleware]-User-Agent:: ${userAgent}`);
+  console.log(`[Middleware]-Referer:: ${referer}`);
+  console.log(`LOG---------------------------------`);
+
   const { authenticated } = await isAuthenticated(request);
   if (authenticated === false) {
     console.log("-------->accessToken 過期");
@@ -36,5 +50,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/cart"],
+  matcher: ["/cart", "/api/:path*"],
 };
