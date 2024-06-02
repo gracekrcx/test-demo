@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { headers } from "next/headers";
 
 async function fetchCart() {
   const cookieString = cookies()
@@ -8,12 +9,15 @@ async function fetchCart() {
 
   console.log("server component cookieString ------->", cookieString);
 
+  const headersList = headers();
+  const accessToken = headersList.get("accessToken") || "";
+
   try {
     const res = await fetch("http://localhost:5000/getCart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: cookieString, // 轉發當前的 cookie
+        Cookie: `accessToken=${accessToken}`, // 轉發當前的 cookie
       },
     });
 

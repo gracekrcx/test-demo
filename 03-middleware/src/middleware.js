@@ -1,6 +1,17 @@
 import { isAuthenticated } from "./lib/auth";
 import { NextResponse } from "next/server";
 
+function getCookieValue(cookies, name) {
+  const parts = cookies.split(";");
+  for (const part of parts) {
+    const [key, value] = part.trim().split("=");
+    if (key === name) {
+      return value;
+    }
+  }
+  return null;
+}
+
 export async function middleware(request) {
   const path = request.nextUrl.pathname;
   const ip = request.ip ?? "Unknown";
@@ -12,9 +23,9 @@ export async function middleware(request) {
   console.log(`LOG---------------------------------`);
   console.log("[Middleware]-url::", request.url);
   console.log(`[Middleware]:: ${timestamp} ${method} ${path}`);
-  console.log(`[Middleware]-IP:: ${ip}`);
-  console.log(`[Middleware]-User-Agent:: ${userAgent}`);
-  console.log(`[Middleware]-Referer:: ${referer}`);
+  // console.log(`[Middleware]-IP:: ${ip}`);
+  // console.log(`[Middleware]-User-Agent:: ${userAgent}`);
+  // console.log(`[Middleware]-Referer:: ${referer}`);
   console.log(`LOG---------------------------------`);
 
   const { authenticated } = await isAuthenticated(request);
@@ -34,8 +45,18 @@ export async function middleware(request) {
       console.log("-- MW res 拿到的 headers ------>", cookies);
       console.log("-- MW res.status--->", res.status);
 
+      // set New request headers 給之後的 API Route 或 Server Component
+      const accessToken = getCookieValue(cookies, "accessToken");
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set("accessToken", accessToken);
+
       // 創建新的 response，並設置從 auth service 接收到的 cookie
-      const updatedResponse = NextResponse.next();
+      const updatedResponse = NextResponse.next({
+        request: {
+          // New request headers
+          headers: requestHeaders,
+        },
+      });
       updatedResponse.headers.append("set-cookie", cookies);
 
       // 檢查伺服器回應狀態碼
