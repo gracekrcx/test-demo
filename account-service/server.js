@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 // const { createClient } = require('redis');
 const path = require("path");
+const accessLimit = "5s";
 
 const app = express();
 const PORT = 5000;
@@ -26,7 +27,7 @@ app.post("/login", async (req, res) => {
   // 這裡應該添加驗證邏輯，例如查詢資料庫
   if (username && password) {
     const accessToken = jwt.sign({ username }, ACCESS_TOKEN_SECRET, {
-      expiresIn: "15m",
+      expiresIn: accessLimit,
     });
     const refreshToken = jwt.sign({ username }, REFRESH_TOKEN_SECRET, {
       expiresIn: "7d",
@@ -64,12 +65,12 @@ app.post("/refresh", async (req, res) => {
 
     // const storedRefreshToken = await redisClient.get(username);
 
-    if (refreshToken !== storedRefreshToken) {
-      return res.status(403).json({ message: "Invalid refresh token" });
-    }
+    // if (refreshToken !== storedRefreshToken) {
+    //   return res.status(403).json({ message: "Invalid refresh token" });
+    // }
 
     const newAccessToken = jwt.sign({ username }, ACCESS_TOKEN_SECRET, {
-      expiresIn: "15m",
+      expiresIn: accessLimit,
     });
 
     // 设置新的 accessToken cookie
@@ -79,6 +80,33 @@ app.post("/refresh", async (req, res) => {
   } catch (err) {
     console.error("Error refreshing access token:", err);
     res.status(403).json({ message: "Invalid refresh token" });
+  }
+});
+
+// 取得購物車商品的路由，驗證 accessToken
+app.post("/getCart", (req, res) => {
+  const {
+    cookies: { accessToken },
+  } = req;
+  console.log("---server /getCart---->", req.cookies.accessToken);
+  if (!accessToken) {
+    return res.status(401).json({ message: "Missing access token" });
+  }
+
+  try {
+    jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
+    res.json({ message: "Cart items", data: ["apple", "banana"] });
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      console.log("Access token expired");
+      return res
+        .status(401)
+        .json({ message: "Access token expired", valid: false });
+    } else {
+      return res
+        .status(403)
+        .json({ message: "Invalid access token", valid: false });
+    }
   }
 });
 
