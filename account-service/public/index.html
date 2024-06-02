@@ -18,6 +18,10 @@
     </form>
     <button id="refreshButton">Refresh Access Token</button>
     <script>
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      const redirectUrl = urlParams.get("redirectUrl");
+
       document
         .getElementById("loginForm")
         .addEventListener("submit", async (event) => {
@@ -37,7 +41,7 @@
             const data = await response.json();
             alert(data.message);
             // 重定向到 localhost:3000
-            window.location.assign("http://localhost:3000");
+            window.location.assign(redirectUrl || "http://localhost:3000");
           } else {
             alert("Login failed");
           }
